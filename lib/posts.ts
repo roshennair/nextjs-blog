@@ -6,6 +6,8 @@ import html from 'remark-html';
 
 const postsDirectory = path.join(process.cwd(), 'posts')
 
+type Metadata = { date: string; title: string };
+
 export function getSortedPostsData() {
 	// Get file names under /posts
 	const fileNames = fs.readdirSync(postsDirectory)
@@ -23,9 +25,10 @@ export function getSortedPostsData() {
 		// Combine the data with the id
 		return {
 			id,
-			...matterResult.data
+			...(matterResult.data as Metadata)
 		}
 	})
+
 	// Sort posts by date
 	return allPostsData.sort(({ date: a }, { date: b }) => {
 		if (a < b) {
@@ -50,7 +53,7 @@ export function getAllPostIds() {
 	})
 }
 
-export async function getPostData(id) {
+export async function getPostData(id: string) {
 	// Read markdown file as string
 	const fullPath = path.join(postsDirectory, `${id}.md`);
 	const fileContents = fs.readFileSync(fullPath, 'utf8');
@@ -67,6 +70,6 @@ export async function getPostData(id) {
 	return {
 		id,
 		contentHtml,
-		...matterResult.data
+		...(matterResult.data as Metadata)
 	}
 }
